@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Star, Clock } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export type Product = {
   id: string;
@@ -58,7 +59,26 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
     );
   };
 
+  // Helper function to format the lastViewed date
+  const formatLastViewed = () => {
+    if (!product.lastViewed) return null;
+    
+    const lastViewedDate = new Date(product.lastViewed);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - lastViewedDate.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) {
+      return 'Just now';
+    } else if (diffInHours < 24) {
+      return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
+    }
+  };
+
   const topTrendingPlatform = getTopTrendingPlatform();
+  const lastViewedFormatted = formatLastViewed();
 
   return (
     <div 
@@ -84,6 +104,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
           </div>
         )}
         
+        {/* Trending badge */}
         {product.trendingScore && product.trendingScore > 80 && (
           <div className="absolute bottom-2 left-2 z-10">
             <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-amber-500/90 text-white backdrop-blur-sm">
@@ -93,6 +114,24 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
                 <span className="ml-1">on {topTrendingPlatform.name}</span>
               )}
             </span>
+          </div>
+        )}
+        
+        {/* Bestseller badge */}
+        {product.isBestseller && (
+          <div className="absolute bottom-2 right-2 z-10">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary/90 text-white backdrop-blur-sm">
+                    <Star size={14} fill="currentColor" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-primary text-primary-foreground text-xs">
+                  <p>Bestseller</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         )}
         
@@ -134,6 +173,14 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
           </span>
         </div>
 
+        {/* Last viewed indicator */}
+        {lastViewedFormatted && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+            <Clock size={12} />
+            <span>Viewed {lastViewedFormatted}</span>
+          </div>
+        )}
+
         {product.trendingScore && product.trendingScore > 0 && (
           <div className="mt-1 mb-2">
             <div className="w-full bg-secondary rounded-full h-1">
@@ -165,4 +212,3 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
 };
 
 export default SortableItem;
-
