@@ -1,4 +1,3 @@
-
 import { Product } from '../SortableItem';
 
 // Sample product data with trending and discount information
@@ -12,6 +11,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     rating: 4.7,
     ratingCount: 234,
     date: "2023-09-15",
+    publishedAt: "2023-09-10T14:30:00Z", // Shopify published date
     tag: "Bestseller",
     trendingScore: 85,
     trendingTikTok: 92,
@@ -30,6 +30,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     rating: 4.2,
     ratingCount: 156,
     date: "2023-11-20",
+    publishedAt: "2023-11-18T09:15:00Z", // Shopify published date
     discount: 0.15,
     trendingScore: 65,
     trendingTikTok: 88,
@@ -47,6 +48,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     rating: 4.5,
     ratingCount: 189,
     date: "2024-01-05",
+    publishedAt: "2024-01-03T11:45:00Z", // Shopify published date
     trendingScore: 78,
     trendingTikTok: 70,
     trendingYouTube: 82,
@@ -64,6 +66,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     rating: 4.9,
     ratingCount: 456,
     date: "2023-08-10",
+    publishedAt: "2023-08-08T16:20:00Z", // Shopify published date
     tag: "Popular",
     trendingScore: 95,
     trendingTikTok: 96,
@@ -82,6 +85,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     rating: 4.6,
     ratingCount: 210,
     date: "2023-12-12",
+    publishedAt: "2023-12-10T08:30:00Z", // Shopify published date
     discount: 0.20,
     trendingScore: 72,
     trendingTikTok: 65,
@@ -99,6 +103,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     rating: 4.4,
     ratingCount: 178,
     date: "2023-10-05",
+    publishedAt: "2023-10-01T13:10:00Z", // Shopify published date
     trendingScore: 68,
     trendingTikTok: 75,
     trendingYouTube: 60,
@@ -116,6 +121,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     rating: 4.8,
     ratingCount: 324,
     date: "2023-07-15",
+    publishedAt: "2023-07-12T10:00:00Z", // Shopify published date
     tag: "New",
     trendingScore: 87,
     trendingTikTok: 90,
@@ -134,6 +140,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     rating: 4.7,
     ratingCount: 289,
     date: "2024-02-01",
+    publishedAt: "2024-01-28T15:45:00Z", // Shopify published date
     discount: 0.10,
     trendingScore: 90,
     trendingTikTok: 94,
@@ -145,7 +152,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
 ];
 
 // Sort products based on the selected option
-export const getSortedProducts = (sortValue: string, products = SAMPLE_PRODUCTS) => {
+export const getSortedProducts = (sortValue: string, products = SAMPLE_PRODUCTS, useCustomDates = false) => {
   let sortedProducts = [...products];
   
   switch (sortValue) {
@@ -156,7 +163,21 @@ export const getSortedProducts = (sortValue: string, products = SAMPLE_PRODUCTS)
       sortedProducts.sort((a, b) => b.price - a.price);
       break;
     case 'newest':
-      sortedProducts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      sortedProducts.sort((a, b) => {
+        if (useCustomDates && a.customSortDate && b.customSortDate) {
+          return new Date(b.customSortDate).getTime() - new Date(a.customSortDate).getTime();
+        }
+        else if (useCustomDates && a.customSortDate) {
+          return -1;
+        }
+        else if (useCustomDates && b.customSortDate) {
+          return 1;
+        }
+        else if (a.publishedAt && b.publishedAt) {
+          return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+        }
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
       break;
     case 'rating-desc':
       sortedProducts.sort((a, b) => b.rating - a.rating);
@@ -185,8 +206,22 @@ export const getSortedProducts = (sortValue: string, products = SAMPLE_PRODUCTS)
     case 'recently-viewed':
       sortedProducts.sort((a, b) => new Date(b.lastViewed || '').getTime() - new Date(a.lastViewed || '').getTime());
       break;
-    // 'featured' is the default case, no sorting needed
+    default:
+      break;
   }
   
   return sortedProducts;
+};
+
+// Function to override product dates for custom sorting
+export const overrideProductDate = (productId: string, newDate: string, products = SAMPLE_PRODUCTS): Product[] => {
+  return products.map(product => {
+    if (product.id === productId) {
+      return {
+        ...product,
+        customSortDate: newDate
+      };
+    }
+    return product;
+  });
 };

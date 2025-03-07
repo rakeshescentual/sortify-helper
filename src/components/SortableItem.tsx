@@ -15,6 +15,8 @@ export type Product = {
   rating: number;
   ratingCount: number;
   date: string;
+  publishedAt?: string; // Shopify published date
+  customSortDate?: string; // For manual override by Escentual
   discount?: number;
   tag?: string;
   // Trending properties
