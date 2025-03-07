@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
+import { TrendUp } from 'lucide-react';
 
 export type Product = {
   id: string;
@@ -13,6 +14,13 @@ export type Product = {
   date: string;
   discount?: number;
   tag?: string;
+  // New trending properties
+  trendingScore?: number;
+  trendingTikTok?: number;
+  trendingYouTube?: number;
+  trendingInstagram?: number;
+  isBestseller?: boolean;
+  lastViewed?: string;
 };
 
 interface SortableItemProps {
@@ -35,6 +43,23 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
       }).format(product.price * (1 - product.discount))
     : null;
 
+  // Helper function to determine which trending platform has the highest score
+  const getTopTrendingPlatform = () => {
+    if (!product.trendingTikTok && !product.trendingYouTube && !product.trendingInstagram) return null;
+    
+    const platforms = [
+      { name: 'TikTok', score: product.trendingTikTok || 0 },
+      { name: 'YouTube', score: product.trendingYouTube || 0 },
+      { name: 'Instagram', score: product.trendingInstagram || 0 }
+    ];
+    
+    return platforms.reduce((max, platform) => 
+      platform.score > max.score ? platform : max
+    );
+  };
+
+  const topTrendingPlatform = getTopTrendingPlatform();
+
   return (
     <div 
       className={cn(
@@ -51,10 +76,22 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
           </div>
         )}
         
-        {product.discount && (
+        {product.discount && product.discount > 0 && (
           <div className="absolute top-2 right-2 z-10">
             <span className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-destructive text-white">
               {`-${Math.round(product.discount * 100)}%`}
+            </span>
+          </div>
+        )}
+        
+        {product.trendingScore && product.trendingScore > 80 && (
+          <div className="absolute bottom-2 left-2 z-10">
+            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-amber-500/90 text-white backdrop-blur-sm">
+              <TrendUp size={12} />
+              Trending
+              {topTrendingPlatform && topTrendingPlatform.score > 85 && (
+                <span className="ml-1">on {topTrendingPlatform.name}</span>
+              )}
             </span>
           </div>
         )}
@@ -96,9 +133,24 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
             ({product.ratingCount})
           </span>
         </div>
+
+        {product.trendingScore && product.trendingScore > 0 && (
+          <div className="mt-1 mb-2">
+            <div className="w-full bg-secondary rounded-full h-1">
+              <div 
+                className="bg-gradient-to-r from-primary to-amber-500 h-1 rounded-full" 
+                style={{ width: `${Math.min(product.trendingScore, 100)}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-[10px] text-muted-foreground mt-0.5">
+              <span>Trend score</span>
+              <span>{product.trendingScore}/100</span>
+            </div>
+          </div>
+        )}
         
         <div className="mt-auto">
-          {product.discount ? (
+          {product.discount && product.discount > 0 ? (
             <div className="flex items-center gap-2">
               <span className="text-destructive font-medium">{discountedPrice}</span>
               <span className="text-muted-foreground text-sm line-through">{formattedPrice}</span>

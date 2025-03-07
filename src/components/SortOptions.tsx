@@ -17,6 +17,16 @@ const DEFAULT_SORT_OPTIONS: SortOption[] = [
   { id: 'newest', label: 'Newest', value: 'newest' },
   { id: 'rating', label: 'Best Rating', value: 'rating-desc' },
   { id: 'popularity', label: 'Most Popular', value: 'popularity-desc' },
+  // New trending sort options
+  { id: 'trending', label: 'Trending Now', value: 'trending' },
+  { id: 'trending-tiktok', label: 'Trending on TikTok', value: 'trending-tiktok' },
+  { id: 'trending-youtube', label: 'Trending on YouTube', value: 'trending-youtube' },
+  { id: 'trending-instagram', label: 'Trending on Instagram', value: 'trending-instagram' },
+  // Discount sort option
+  { id: 'discount', label: 'Highest Discount', value: 'discount-desc' },
+  // Additional useful sort options
+  { id: 'bestseller', label: 'Bestsellers', value: 'bestseller' },
+  { id: 'recently-viewed', label: 'Recently Viewed', value: 'recently-viewed' },
 ];
 
 interface SortOptionsProps {

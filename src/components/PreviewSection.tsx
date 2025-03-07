@@ -19,6 +19,11 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({ className }) => {
     setCurrentSortOption(option);
   };
 
+  // Helper to determine if the current sort is trending-related
+  const isTrendingSort = () => {
+    return ['trending', 'trending-tiktok', 'trending-youtube', 'trending-instagram'].includes(currentSortOption.value);
+  };
+
   return (
     <section className={cn(
       "w-full max-w-7xl mx-auto px-4 py-8",
@@ -31,6 +36,32 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({ className }) => {
             onChange={handleSortChange} 
             className="mb-8"
           />
+          
+          {isTrendingSort() && (
+            <div className="mb-6 p-4 rounded-lg bg-secondary/50 border border-border">
+              <h3 className="text-sm font-medium mb-2">About Trending Sort</h3>
+              <p className="text-sm text-muted-foreground">
+                {currentSortOption.value === 'trending' && 
+                  "Products are sorted based on overall AI sentiment analysis across the internet, including social media platforms."}
+                {currentSortOption.value === 'trending-tiktok' && 
+                  "Products are sorted based on AI sentiment analysis specifically from TikTok content and engagement."}
+                {currentSortOption.value === 'trending-youtube' && 
+                  "Products are sorted based on AI sentiment analysis specifically from YouTube content and engagement."}
+                {currentSortOption.value === 'trending-instagram' && 
+                  "Products are sorted based on AI sentiment analysis specifically from Instagram content and engagement."}
+              </p>
+            </div>
+          )}
+
+          {currentSortOption.value === 'discount-desc' && (
+            <div className="mb-6 p-4 rounded-lg bg-secondary/50 border border-border">
+              <h3 className="text-sm font-medium mb-2">About Discount Sort</h3>
+              <p className="text-sm text-muted-foreground">
+                Products are sorted by highest discount percentage, showing you the best deals first.
+              </p>
+            </div>
+          )}
+          
           <ProductGrid sortOption={currentSortOption} />
         </div>
       </div>
