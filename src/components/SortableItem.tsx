@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
-import { TrendUp } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 
 export type Product = {
   id: string;
@@ -87,7 +87,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
         {product.trendingScore && product.trendingScore > 80 && (
           <div className="absolute bottom-2 left-2 z-10">
             <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-amber-500/90 text-white backdrop-blur-sm">
-              <TrendUp size={12} />
+              <TrendingUp size={12} />
               Trending
               {topTrendingPlatform && topTrendingPlatform.score > 85 && (
                 <span className="ml-1">on {topTrendingPlatform.name}</span>
@@ -165,3 +165,4 @@ const SortableItem: React.FC<SortableItemProps> = ({ product, className }) => {
 };
 
 export default SortableItem;
+
